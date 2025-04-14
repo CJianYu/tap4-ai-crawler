@@ -93,10 +93,14 @@ class OSSUtil:
             else:
                 file_url = f"{self.S3_ENDPOINT_URL}/{self.S3_BUCKET_NAME}/{file_key}"
 
+            # 如果只需要路径部分，直接返回路径
+            path_only_url = f"/{file_key}"
+            
             logger.info(f"文件URL: {file_url}")
-            return file_url
+            # 返回简单路径
+            return path_only_url
         except Exception as e:
-            logger.info(f"上传文件过程中发生错误: {e}")
+            logger.error(f"上传文件过程中发生错误: {e}")
             return None
 
     def generate_thumbnail_image(self, url, image_key):
@@ -130,5 +134,10 @@ class OSSUtil:
             file_url = f"https://{self.S3_CUSTOM_DOMAIN}/{thumbnail_key}"
         else:
             file_url = f"{self.S3_ENDPOINT_URL}/{self.S3_BUCKET_NAME}/{thumbnail_key}"
+            
+        # 如果只需要路径部分，直接返回路径
+        path_only_url = f"/{thumbnail_key}"
+        
         logger.info(f"缩略图文件URL: {file_url}")
-        return file_url
+        # 返回简单路径
+        return path_only_url

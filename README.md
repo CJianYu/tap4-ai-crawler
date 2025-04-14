@@ -1,10 +1,129 @@
-# Tap4 AI Crawler
+# AI网站爬虫服务
 
-Tap4 AI Crawler is an open source web crawler built by [tap4.ai](https://tap4.ai), that will convert the website into the website summarize info with LLM. Includes powerful scraping, crawling and data extraction capabilities, web page screenshots. With Tap4 AI Crawler, you can not only easily update the ai tool detail for your AI Tools Directory but also summary of the website.
+一个高效的网站爬虫服务，可以抓取网站内容、生成截图、使用AI处理内容并支持多语言翻译。
 
-This project is based on Python, very lightweight, easy to maintain, suitable for individual developers interested in AI tools directories, and also for learners interested in Python. We welcome everyone to fork and star.
+## 优化改进
 
-English | [简体中文](./README.zh-CN.md)
+最新版本进行了以下优化，大幅提高了爬虫的成功率和稳定性：
+
+1. **浏览器实例管理**
+   - 每个请求独立初始化浏览器实例，避免连接问题
+   - 服务关闭时正确释放资源
+   - 添加浏览器实例重启机制
+
+2. **异常处理机制**
+   - 增加全面的异常捕获和日志记录
+   - 页面加载超时时继续处理部分加载内容
+   - 保存错误页面快照和HTML用于调试
+
+3. **任务队列系统**
+   - 添加基于asyncio的并发任务队列
+   - 控制最大并发任务数，避免资源竞争
+   - 提供任务状态查询API
+
+4. **性能优化**
+   - 请求拦截非必要资源(图片、字体等)，提高加载速度
+   - 多次重试截图机制，提高截图成功率
+   - 清理临时文件，避免磁盘占用
+
+5. **API增强**
+   - 添加CORS支持，便于前端集成
+   - 完善错误响应格式
+   - 添加队列状态查询接口
+
+## 安装与运行
+
+### 依赖安装
+
+```bash
+pip install -r requirements.txt
+```
+
+### 环境配置
+
+复制.env.example为.env文件，并填写以下配置：
+
+```
+# LLM配置
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama3-70b-8192
+GROQ_MAX_TOKENS=5000
+
+# S3存储配置
+S3_ENDPOINT_URL=your_s3_endpoint
+S3_BUCKET_NAME=your_bucket
+S3_ACCESS_KEY_ID=your_access_key
+S3_SECRET_ACCESS_KEY=your_secret_key
+S3_CUSTOM_DOMAIN=your_custom_domain
+
+# API鉴权
+AUTH_SECRET=your_auth_secret
+```
+
+### 运行服务
+
+```bash
+uvicorn main_api:app --host 0.0.0.0 --port 8040 --reload
+```
+
+## API接口
+
+### 同步爬取
+
+```
+POST /site/crawl
+```
+
+参数：
+```json
+{
+  "url": "https://example.com",
+  "tags": ["ai", "tool"],
+  "languages": ["zh-CN", "es", "fr"]
+}
+```
+
+### 异步爬取
+
+```
+POST /site/crawl_async
+```
+
+参数：
+```json
+{
+  "url": "https://example.com",
+  "tags": ["ai", "tool"],
+  "languages": ["zh-CN", "es", "fr"],
+  "callback_url": "https://your-callback-url.com",
+  "key": "your_callback_auth_key"
+}
+```
+
+### 查询任务状态
+
+```
+GET /site/task/{task_id}
+```
+
+### 查询队列状态
+
+```
+GET /site/queue_status
+```
+
+## 异常处理与调试
+
+爬虫失败时会自动保存错误快照到`./error_logs`目录，包含：
+- 错误截图
+- 错误页面HTML内容
+- 详细错误日志
+
+## 注意事项
+
+1. 部分网站有反爬机制，可能需要添加代理IP支持
+2. 请合理设置并发任务数，避免服务器资源过载
+3. 截图功能可能受页面复杂度影响
 
 ## Support Tap4 AI in Product Hunt
 

@@ -31,7 +31,16 @@ class LLMUtil:
 
     def process_detail(self, user_prompt):
         logger.info("正在处理Detail...")
-        return util.detail_handle(self.process_prompt(self.detail_sys_prompt, user_prompt))
+        # 修改：添加网站实际内容到处理中，不再使用固定模板
+        custom_prompt = f"""
+分析以下网站内容，并提供信息概述。使用markdown格式输出，使用h3级别标题。
+如果内容不够明确，可以根据可用信息做合理推测，但不要编造不存在的信息。
+如果无法从内容中获取某些信息，可以省略相关部分。
+
+内容:
+{user_prompt}
+"""
+        return self.process_prompt("你是一个网站内容分析专家。根据提供的网站文本内容，提取核心信息并以markdown格式输出，使用h3级别标题。", custom_prompt)
 
     def process_tags(self, user_prompt):
         logger.info(f"正在处理tags...")
