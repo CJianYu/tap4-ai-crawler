@@ -25,6 +25,10 @@ venv/
 ENV/
 env/
 
+# Environment variables
+.env
+.env.*
+
 # Error logs
 error_logs/
 *.log
